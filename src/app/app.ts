@@ -18,7 +18,7 @@ export class App implements OnInit {
     const apiUrl = import.meta?.env?.VITE_API_URL ?? '';
     const url = apiUrl
   ? `${apiUrl}/api/data`
-  : 'http://localhost:3000/api/data';
+  : 'process.env.VITE_API_URL/api/data';
     fetch(url)
       .then(res => res.json())
       .then(data => this.data.set(data))

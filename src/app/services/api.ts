@@ -8,6 +8,6 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   getData() {
-    return this.http.get('http://localhost:3000/api/data');
+    return this.http.get('process.env.VITE_API_URL/api/data');
   }
 }
