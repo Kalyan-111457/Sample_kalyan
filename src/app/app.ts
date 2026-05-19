@@ -16,8 +16,9 @@ export class App implements OnInit {
 
   ngOnInit() {
     const apiUrl = import.meta?.env?.VITE_API_URL ?? '';
-    const url = apiUrl ? `${apiUrl}/api/data` : '/api/data';
-
+    const url = apiUrl
+  ? `${apiUrl}/api/data`
+  : 'http://localhost:3000/api/data';
     fetch(url)
       .then(res => res.json())
       .then(data => this.data.set(data))
