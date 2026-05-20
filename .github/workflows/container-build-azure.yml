@@ -1,7 +1,6 @@
 name: Container Build Azure
 
 on:
-
   workflow_call:
 
     inputs:
@@ -24,6 +23,7 @@ on:
 jobs:
 
   prep-matrix:
+
     name: Prepare Matrix
 
     runs-on: ubuntu-latest
@@ -33,10 +33,36 @@ jobs:
 
     steps:
 
-        - id: set-matrix
-          run: |
-            echo "matrix=[{\"path\":\".\",\"image\":\"api\",\"dockerfile\":\"Dockerfile.api\"},{\"path\":\".\",\"image\":\"web\",\"dockerfile\":\"Dockerfile.web\"}]" >> $GITHUB_OUTPUT
-        include: ${{ fromJson(needs.prep-matrix.outputs.matrix) }}
+      - id: set-matrix
+
+        run: |
+          MATRIX='{
+            "include":[
+              {
+                "path":".",
+                "image":"api",
+                "dockerfile":"Dockerfile.api"
+              },
+              {
+                "path":".",
+                "image":"web",
+                "dockerfile":"Dockerfile.web"
+              }
+            ]
+          }'
+
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+  build-and-publish:
+
+    name: Build and Publish Docker Images
+
+    runs-on: ubuntu-latest
+
+    needs: [prep-matrix]
+
+    strategy:
+      matrix: ${{ fromJson(needs.prep-matrix.outputs.matrix) }}
 
     environment: ${{ inputs.ENVIRONMENT }}
 
