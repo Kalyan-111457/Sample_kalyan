@@ -1,0 +1,74 @@
+{
+    "AI-Keys.messages": [
+        {
+            "role": "system",
+            "content": "You are a software engineer"
+        },
+        {
+            "role": "user",
+            "content": "hi"
+        },
+        {
+            "role": "user",
+            "content": "hi"
+        },
+        {
+            "role": "assistant",
+            "content": "Hello! How can I assist you today?",
+            "refusal": null,
+            "annotations": []
+        },
+        {
+            "role": "assistant",
+            "content": "Hello! How can I assist you today?",
+            "refusal": null,
+            "annotations": []
+        },
+        {
+            "role": "user",
+            "content": "run nackend and frontend"
+        },
+        {
+            "role": "assistant",
+            "content": "Running both backend and frontend refers to starting and running the server-side (backend) and client-side (frontend) components of a web application simultaneously. This allows the application to function properly and serve the user interface as intended. To run both backend and frontend, you would typically start the backend server first and then run the frontend application to connect to the server and interact with it.",
+            "refusal": null,
+            "annotations": []
+        }
+    ],
+    "AI-Keys.openAI.messages": [
+        {
+            "role": "system",
+            "content": "You are a software engineer"
+        },
+        {
+            "role": "user",
+            "content": "hi"
+        },
+        {
+            "role": "user",
+            "content": "hi"
+        },
+        {
+            "role": "assistant",
+            "content": "Hello! How can I assist you today?",
+            "refusal": null,
+            "annotations": []
+        },
+        {
+            "role": "assistant",
+            "content": "Hello! How can I assist you today?",
+            "refusal": null,
+            "annotations": []
+        },
+        {
+            "role": "user",
+            "content": "run nackend and frontend"
+        },
+        {
+            "role": "assistant",
+            "content": "Running both backend and frontend refers to starting and running the server-side (backend) and client-side (frontend) components of a web application simultaneously. This allows the application to function properly and serve the user interface as intended. To run both backend and frontend, you would typically start the backend server first and then run the frontend application to connect to the server and interact with it.",
+            "refusal": null,
+            "annotations": []
+        }
+    ]
+}

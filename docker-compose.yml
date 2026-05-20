@@ -1,0 +1,16 @@
+services:
+
+  web:
+    image: deploy-web
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      - api
+
+  api:
+    image: deploy-api
+
+    ports:
+      - "3000:3000"

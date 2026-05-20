@@ -1,0 +1,86 @@
+name: Container Build Azure
+
+on:
+  workflow_call:
+
+    inputs:
+
+      ENVIRONMENT:
+        required: true
+        type: string
+
+      BUILD_CONTEXT:
+        required: true
+        type: string
+
+      TAG_NAME:
+        required: true
+        type: string
+
+jobs:
+
+  prep_matrix:
+    name: Prepare Matrix
+    runs-on: ubuntu-latest
+
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+    steps:
+
+      - id: set-matrix
+        env:
+          BUILD_CONTEXT: ${{ inputs.BUILD_CONTEXT }}
+
+        run: |
+          MATRIX_JSON=$(jq -n -c \
+            --argjson ctx "$BUILD_CONTEXT" \
+            '{include: $ctx}')
+
+          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+
+  build-and-publish:
+    name: Build And Publish
+    runs-on: ubuntu-latest
+
+    needs: [prep_matrix]
+
+    environment: ${{ inputs.ENVIRONMENT }}
+
+    strategy:
+      matrix: ${{ fromJson(needs.prep_matrix.outputs.matrix) }}
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Docker Setup
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker Metadata
+        id: docker_meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ vars.ACR_URL }}/${{ matrix.image }}
+
+      - name: Login To Azure Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ vars.ACR_URL }}
+          username: ${{ secrets.AZURE_CLIENT_ID }}
+          password: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: Build And Push Docker Image
+        uses: docker/build-push-action@v5
+
+        with:
+          context: ${{ matrix.path }}
+          file: ${{ matrix.dockerfile }}
+
+          push: true
+
+          tags: |
+            ${{ vars.ACR_URL }}/${{ matrix.image }}:${{ inputs.TAG_NAME }}
+
+          labels: ${{ steps.docker_meta.outputs.labels }}

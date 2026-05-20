@@ -12,13 +12,15 @@ export class App implements OnInit {
   protected readonly title = signal('deploy-project-app');
   protected data = signal<any>(null);
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
-    const apiUrl = import.meta?.env?.VITE_API_URL ?? '';
-    const url = apiUrl
-  ? `${apiUrl}/api/data`
-  : 'process.env.VITE_API_URL/api/data';
+    const apiUrl = import.meta.env['NG_APP_BACKEND_API_URL'];
+    const url = `${apiUrl}/api/data`;
+
+    console.log(url);
+
+    console.log('Environment variables:', import.meta.env);
     fetch(url)
       .then(res => res.json())
       .then(data => this.data.set(data))

@@ -1,0 +1,119 @@
+name: Deploy to Dev
+
+on:
+  push:
+    branches:
+      - develop
+
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+
+  build-and-publish:
+    name: Build and Publish Containers
+    uses: ./.github/workflows/container-build-azure.yml
+
+    with:
+      ENVIRONMENT: dev
+
+      BUILD_CONTEXT: >-
+        [
+          {
+            "path":"./server",
+            "image":"api",
+            "dockerfile":"./Dockerfile.api"
+          },
+          {
+            "path":"./",
+            "image":"web",
+            "dockerfile":"./Dockerfile.web"
+          }
+        ]
+
+      TAG_NAME: dev-${{ github.sha }}
+
+    secrets: inherit
+
+  prep_deploy_matrix:
+    name: Prepare Deploy Matrix
+    runs-on: ubuntu-latest
+    needs: [build-and-publish]
+
+    environment: dev
+
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+    steps:
+      - id: set-matrix
+        env:
+          API_APP_NAME: ${{ vars.API_APP_NAME }}
+          WEB_APP_NAME: ${{ vars.WEB_APP_NAME }}
+
+        run: |
+          MATRIX_JSON=$(jq -n -c \
+            --arg api_app "$API_APP_NAME" \
+            --arg web_app "$WEB_APP_NAME" \
+            '{
+              include: [
+                {
+                  "image":"api",
+                  "app_name":$api_app
+                },
+                {
+                  "image":"web",
+                  "app_name":$web_app
+                }
+              ]
+            }')
+
+          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+
+  deploy-to-azure:
+    name: Deploy To Azure App Service
+    runs-on: ubuntu-latest
+
+    needs: [prep_deploy_matrix]
+
+    environment: dev
+
+    strategy:
+      matrix: ${{ fromJson(needs.prep_deploy_matrix.outputs.matrix) }}
+
+    env:
+      TAG_NAME: dev-${{ github.sha }}
+
+    steps:
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Container
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ matrix.app_name }}
+          images: ${{ vars.ACR_URL }}/${{ matrix.image }}:${{ env.TAG_NAME }}
+
+      - name: Inject Key Vault URL
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: ${{ matrix.app_name }}
+
+          app-settings-json: |
+            [
+              {
+                "name": "keyVaultUrl",
+                "value": "${{ secrets.KEY_VAULT_URL }}",
+                "slotSetting": false
+              }
+            ]
