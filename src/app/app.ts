@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { environment } from '../environments/environment';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -6,7 +7,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-root',
   imports: [RouterOutlet, CommonModule],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
 export class App implements OnInit {
   protected readonly title = signal('deploy-project-app');
@@ -14,13 +15,14 @@ export class App implements OnInit {
 
   constructor() { }
 
+
+
+
   ngOnInit() {
-    const apiUrl = import.meta.env['NG_APP_BACKEND_API_URL'];
-    const url = `${apiUrl}/api/data`;
+    const url = `${environment.backendApiUrl}/api/data`;
 
     console.log(url);
 
-    console.log('Environment variables:', import.meta.env);
     fetch(url)
       .then(res => res.json())
       .then(data => this.data.set(data))

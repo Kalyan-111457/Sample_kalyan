@@ -19,9 +19,6 @@ app.use(cors({
 
 app.use(express.json());
 
-const distPath = path.join(__dirname, '..', 'dist', 'deploy-project-app', 'browser');
-app.use(express.static(distPath));
-
 app.get("/api/data", (req, res) => {
   res.json({
     name: "Kalyan",
@@ -29,6 +26,9 @@ app.get("/api/data", (req, res) => {
     role: "Software Design Trainee"
   });
 });
+
+const distPath = path.join(__dirname, '..', 'dist', 'deploy-project-app', 'browser');
+app.use(express.static(distPath));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
