@@ -36,7 +36,11 @@ jobs:
       - id: set-matrix
 
         run: |
-          echo "matrix=${{ inputs.BUILD_CONTEXT }}" >> $GITHUB_OUTPUT
+
+          echo "matrix=$(cat <<EOF
+          ${{ inputs.BUILD_CONTEXT }}
+          EOF
+          )" >> $GITHUB_OUTPUT
 
   build-and-publish:
     name: Build and Publish Docker Images
