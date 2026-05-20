@@ -70,30 +70,14 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
     steps:
+    - id: set-matrix
 
-      - id: set-matrix
+      env:
+        API_APP_NAME: ${{ vars.API_APP_NAME }}
+        WEB_APP_NAME: ${{ vars.WEB_APP_NAME }}
 
-        env:
-          API_APP_NAME: ${{ vars.API_APP_NAME }}
-          WEB_APP_NAME: ${{ vars.WEB_APP_NAME }}
-
-        run: |
-
-          echo "matrix=$(cat <<EOF
-          {
-            \"include\": [
-              {
-                \"image\": \"api\",
-                \"app_name\": \"$API_APP_NAME\"
-              },
-              {
-                \"image\": \"web\",
-                \"app_name\": \"$WEB_APP_NAME\"
-              }
-            ]
-          }
-          EOF
-          )" >> $GITHUB_OUTPUT
+      run: |
+        echo "matrix={\"include\":[{\"image\":\"api\",\"app_name\":\"$API_APP_NAME\"},{\"image\":\"web\",\"app_name\":\"$WEB_APP_NAME\"}]}" >> $GITHUB_OUTPUT
 
   deploy-to-azure:
     name: Deploy to Azure App Service
