@@ -42,7 +42,7 @@ To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use th
 
 ```bash
 ng test
-```
+```ds
 
 ## Running end-to-end tests
 
