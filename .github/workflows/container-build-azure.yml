@@ -23,21 +23,21 @@ on:
 
 jobs:
 
-prep-matrix:
+  prep-matrix:
 
-  name: Prepare Matrix
+    name: Prepare Matrix
 
-  runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  outputs:
-    matrix: ${{ steps.set-matrix.outputs.matrix }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
 
-  steps:
+    steps:
 
-    - id: set-matrix
+      - id: set-matrix
 
-      run: |
-        echo 'matrix={"include":[{"path":".","image":"api","dockerfile":"Dockerfile.api"},{"path":".","image":"web","dockerfile":"Dockerfile.web"}]}' >> $GITHUB_OUTPUT
+        run: |
+          echo 'matrix={"include":[{"path":".","image":"api","dockerfile":"Dockerfile.api"},{"path":".","image":"web","dockerfile":"Dockerfile.web"}]}' >> $GITHUB_OUTPUT
 
   build-and-publish:
 
