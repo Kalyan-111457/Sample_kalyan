@@ -74,30 +74,12 @@ jobs:
     steps:
 
       - id: set-matrix
-
         env:
           API_APP_NAME: ${{ vars.API_APP_NAME }}
           WEB_APP_NAME: ${{ vars.WEB_APP_NAME }}
-
         run: |
+          echo 'matrix={"include":[{"path":".","image":"api","dockerfile":"Dockerfile.api"},{"path":".","image":"web","dockerfile":"Dockerfile.web"}]}' >> $GITHUB_OUTPUT
 
-          MATRIX_JSON=$(jq -n -c \
-            --arg api_app "$API_APP_NAME" \
-            --arg web_app "$WEB_APP_NAME" \
-            '{
-              include: [
-                {
-                  "image":"api",
-                  "app_name":$api_app
-                },
-                {
-                  "image":"web",
-                  "app_name":$web_app
-                }
-              ]
-            }')
-
-          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
 
   deploy-to-azure:
     name: Deploy to Azure App Service
