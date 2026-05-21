@@ -1,19 +1,15 @@
 version: '3.8'
 
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.api
-    ports:
-      - "3000:3000"
 
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.web
+  api:
+    image: webcontainer12.azurecr.io/api:latest
     ports:
-      - "4200:80"
+      - "4000:4000"
 
+  web:
+    image: webcontainer12.azurecr.io/web:latest
+    ports:
+      - "80:80"
     depends_on:
-      - backend
+      - api

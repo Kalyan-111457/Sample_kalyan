@@ -57,3 +57,14 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+
+
+node ./scripts/generate-env.js
+npm start
+
+
+
+PORT=3000
+VITE_APP_BACKEND_API_URL=http://localhost:3000
+FRONTEND_PORT=http://localhost:4200

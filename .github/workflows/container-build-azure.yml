@@ -1,6 +1,7 @@
 name: Container Build Azure
 
 on:
+
   workflow_call:
 
     inputs:
@@ -34,8 +35,22 @@ jobs:
     steps:
 
       - id: set-matrix
+
         run: |
-          echo 'matrix={"include":[{"path":".","image":"api","dockerfile":"Dockerfile.api"},{"path":".","image":"web","dockerfile":"Dockerfile.web"}]}' >> $GITHUB_OUTPUT
+          echo 'matrix={
+            "include":[
+              {
+                "path":".",
+                "image":"api",
+                "dockerfile":"Dockerfile.api"
+              },
+              {
+                "path":".",
+                "image":"web",
+                "dockerfile":"Dockerfile.web"
+              }
+            ]
+          }' >> $GITHUB_OUTPUT
 
   build-and-publish:
 
@@ -57,6 +72,7 @@ jobs:
 
       - name: Azure Login
         uses: azure/login@v2
+
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -75,3 +91,14 @@ jobs:
         run: |
           docker push \
             ${{ vars.ACR_URL }}/${{ matrix.image }}:${{ inputs.TAG_NAME }}
+
+      - name: Tag Latest
+        run: |
+          docker tag \
+            ${{ vars.ACR_URL }}/${{ matrix.image }}:${{ inputs.TAG_NAME }} \
+            ${{ vars.ACR_URL }}/${{ matrix.image }}:latest
+
+      - name: Push Latest Tag
+        run: |
+          docker push \
+            ${{ vars.ACR_URL }}/${{ matrix.image }}:latest
